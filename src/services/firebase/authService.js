@@ -6,10 +6,10 @@ import {
     signInWithPopup,
     signOut,
     sendEmailVerification,
+    applyActionCode,
     sendPasswordResetEmail,
     updateProfile,
     GoogleAuthProvider,
-    onAuthStateChanged
   } from "firebase/auth";
 
 const googleProvider = new GoogleAuthProvider();
@@ -67,6 +67,25 @@ export const resetPassword = async (email) => {
     }
 };
 
-export const onAuthStateChanged = (callback) => {
-    return firebaseAuth.onAuthStateChanged(callback);
-  };
+export const sendVerificationEmail = async () => {
+  try {
+    if (!firebaseAuth.currentUser) throw new Error("No user is signed in");
+    await sendEmailVerification(firebaseAuth.currentUser);
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const confirmEmailVerification = async (oobCode) => {
+  try {
+    console.log("Verifying email with code:", oobCode);
+    await applyActionCode(firebaseAuth, oobCode);
+
+    return true;
+  } catch (error) {
+    console.error("Error confirming email verification:", error);
+    throw error;
+  }
+};
+
