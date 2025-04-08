@@ -11,7 +11,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, isEmailVerified } = useAuth();
-  const from = location.state?.from?.pathname || "/dashboard";
+  const from = location.state?.from?.pathname || "/main";
   const [showModal, setShowModal] = useState(false);
 
   const { error, success, loading, handleSubmit } = useRegister();

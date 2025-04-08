@@ -3,7 +3,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import VerifyEmailNoticePage from "./pages/VerifyEmailNoticePage/VerifyEmailNoticePage";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
-import DashboardPage from "./pages/DashboardPage/DashboardPage";
+import MainPage from "./pages/MainPage/MainPage";
 import HomePage from "./pages/HomePage/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import { AuthProvider } from "./features/auth/context/AuthContext";
@@ -18,9 +18,9 @@ function App() {
         <Route path="/verify-email-notice" element={<VerifyEmailNoticePage />} />
         <Route path="/" element={<HomePage/>}/>
 
-        <Route path="/dashboard" element={
+        <Route path="/main" element={
             <ProtectedRoute>
-              <DashboardPage />
+              <MainPage />
             </ProtectedRoute>
           } />
 
