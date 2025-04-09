@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navbar, Nav, Button, Dropdown } from 'react-bootstrap';
-import { BsBarChartFill, BsQrCodeScan, BsCarFrontFill, BsPersonCircle } from 'react-icons/bs';
+import { BsBarChartFill, BsQrCodeScan, BsCarFrontFill, BsPersonCircle, BsWater} from 'react-icons/bs';
 import { useAuth } from '../../../features/auth/context/AuthContext';
 import { logout } from '../../../services/firebase/authService';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +39,16 @@ const BottomNav = ({ activeComponent, setActiveComponent }) => {
           <BsCarFrontFill
             size={24}
             color={activeComponent === 'activity' ? '#38B000' : '#6c757d'}
+          />
+        </Button>
+
+        <Button
+          variant="link"
+          onClick={() => setActiveComponent('water')}
+        >
+          <BsWater 
+            size={24}
+            color={activeComponent === 'water' ? '#38B000' : '#6c757d'}
           />
         </Button>
 
