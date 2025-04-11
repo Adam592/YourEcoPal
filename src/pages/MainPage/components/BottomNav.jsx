@@ -68,7 +68,7 @@ const BottomNav = ({ activeComponent, setActiveComponent }) => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
-            <Dropdown.Item onClick={() => alert('Profile screen coming soon!')}>Profile</Dropdown.Item>
+            <Dropdown.Item onClick={() => setActiveComponent('profile')}>Profile</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => logout().then(() => navigate('/login'))}>
               Sign out

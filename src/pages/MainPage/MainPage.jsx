@@ -9,7 +9,7 @@ const MainPage = () => {
   return (
     <Container fluid className="d-flex flex-column min-vh-100 p-0">
       <Row className="flex-grow-1 m-0">
-        <Col className="p-3 bg-light">{renderComponent()}</Col>
+        <Col className="p-3 bg-light">{renderComponent({ setActiveComponent })}</Col>
       </Row>
 
       <BottomNav

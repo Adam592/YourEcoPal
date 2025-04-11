@@ -1,6 +1,6 @@
 import { BsArrowRight } from 'react-icons/bs';
 
-const DashboardPage = () => {
+const DashboardPage = ({ setActiveComponent }) => {
     
     return (
     <div className="container-fluid p-3" style={{ backgroundColor: '#e8f5e9' }}>
@@ -19,9 +19,12 @@ const DashboardPage = () => {
                 Track your water usage and set timers for daily activities
               </p>
             </div>
-            <a href="/water" className="btn btn-success rounded-circle">
+            <button
+              onClick={() => setActiveComponent('water')}
+              className="btn btn-success rounded-circle"
+            >
               <BsArrowRight size={24} />
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -37,9 +40,12 @@ const DashboardPage = () => {
                 Check eco-friendliness and find sustainable alternatives
               </p>
             </div>
-            <a href="/products" className="btn btn-success rounded-circle">
+            <button
+              onClick={() => setActiveComponent('qrscanner')}
+              className="btn btn-success rounded-circle"
+            >
               <BsArrowRight size={24} />
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -55,9 +61,12 @@ const DashboardPage = () => {
                 Log your travel methods and reduce your carbon footprint
               </p>
             </div>
-            <a href="/journeys" className="btn btn-success rounded-circle">
+            <button
+              onClick={() => setActiveComponent('activity')}
+              className="btn btn-success rounded-circle"
+            >
               <BsArrowRight size={24} />
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -73,9 +82,12 @@ const DashboardPage = () => {
                 Check stats and achievements
               </p>
             </div>
-            <a href="/profile" className="btn btn-success rounded-circle">
-              <BsArrowRight size={24}/>
-            </a>
+            <button
+              onClick={() => setActiveComponent('profile')}
+              className="btn btn-success rounded-circle"
+            >
+              <BsArrowRight size={24} />
+            </button>
           </div>
         </div>
       </div>

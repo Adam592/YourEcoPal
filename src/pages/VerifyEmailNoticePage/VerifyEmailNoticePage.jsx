@@ -6,6 +6,7 @@ import useEmailVerification from './hooks/useEmailVerification';
 import useNavigateToSignIn from './hooks/useNavigateToSignIn';
 import useRenderContent from './hooks/useRenderContent';
 
+
 const VerifyEmailNoticePage = () => {
     const location = useLocation();
     const { currentUser, refreshUserStatus } = useAuth();

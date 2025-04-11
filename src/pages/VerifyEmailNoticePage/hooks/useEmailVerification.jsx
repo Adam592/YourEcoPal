@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { confirmEmailVerification } from '../../../services/firebase/authService';
+import { saveUserData } from '../../../services/firebase/userService';
 
 const useEmailVerification = (oobCode, mode, refreshUserStatus, currentUser) => {
   const [verifying, setVerifying] = useState(false);
@@ -20,6 +21,7 @@ const useEmailVerification = (oobCode, mode, refreshUserStatus, currentUser) => 
             await refreshUserStatus();
 
             if (currentUser && currentUser.emailVerified) {
+              await saveUserData(currentUser.uid, currentUser.email, currentUser.displayName, currentUser.photoURL);
               setSuccess("Your email has been verified successfully!");
             } else {
               setError("Email verification successful, but emailVerified flag not updated yet. Please refresh.");
