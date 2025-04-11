@@ -5,6 +5,29 @@ import TransportModal from './components/TransportModal';
 import MapModal from './components/MapModal';
 import useGeolocation from './hooks/useGeolocation';
 import useMap from './hooks/useMap';
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs } from 'firebase/firestore';
+import { useAuth } from '../../features/auth/context/AuthContext';
+
+const checkAndCreateUserDocument = async (userId) => {
+  const db = getFirestore();
+  const userDocRef = doc(db, "journeys", userId);
+
+  try {
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      // Document does not exist, create it
+      await setDoc(userDocRef, {
+        createdAt: new Date(),
+      });
+      console.log("Document created successfully.");
+    } else {
+      console.log("Document already exists.");
+    }
+  } catch (error) {
+    console.error("Error checking or creating document:", error);
+  }
+};
 
 const ActivityPage = () => {
   const [journeyStatus, setJourneyStatus] = useState('notStarted');
@@ -15,10 +38,19 @@ const ActivityPage = () => {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [showTransportModal, setShowTransportModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
-  const [completedJourneys, setCompletedJourneys] = useState([]); // New state for completed journeys
+  const [completedJourneys, setCompletedJourneys] = useState([]); // State for completed journeys
 
   const mapRef = useRef(null);
   const timerRef = useRef(null);
+
+  const { currentUser } = useAuth();
+
+  useEffect(() => {
+    if (currentUser?.uid) {
+      checkAndCreateUserDocument(currentUser.uid);
+      fetchCompletedJourneys(currentUser.uid); // Fetch journeys on load
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (journeyStatus === 'inProgress') {
@@ -31,6 +63,35 @@ const ActivityPage = () => {
 
     return () => clearInterval(timerRef.current);
   }, [journeyStatus]);
+
+  const fetchCompletedJourneys = async (userId) => {
+    const db = getFirestore();
+    const journeysCollectionRef = collection(db, "journeys", userId, "users_journeys");
+
+    try {
+      const querySnapshot = await getDocs(journeysCollectionRef);
+      const journeys = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setCompletedJourneys(journeys);
+    } catch (error) {
+      console.error("Error fetching completed journeys:", error);
+    }
+  };
+
+  const saveCompletedJourney = async (userId, journey) => {
+    const db = getFirestore();
+    const journeysCollectionRef = collection(db, "journeys", userId, "users_journeys");
+
+    try {
+      await addDoc(journeysCollectionRef, journey);
+      console.log("Journey saved successfully.");
+      fetchCompletedJourneys(userId); // Refresh the table after saving
+    } catch (error) {
+      console.error("Error saving journey:", error);
+    }
+  };
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
@@ -61,15 +122,16 @@ const ActivityPage = () => {
     setJourneyStatus('finished');
     setShowMapModal(true);
 
-    // Save the completed journey
-    setCompletedJourneys((prev) => [
-      ...prev,
-      {
-        transportMode,
-        distance: distance.toFixed(2),
-        elapsedTime: formatTime(elapsedTime),
-      },
-    ]);
+    const journey = {
+      transportMode,
+      distance: distance.toFixed(2),
+      elapsedTime: formatTime(elapsedTime),
+      timestamp: new Date(),
+    };
+
+    if (currentUser?.uid) {
+      saveCompletedJourney(currentUser.uid, journey);
+    }
   };
 
   const handleResetJourney = () => {
@@ -83,12 +145,20 @@ const ActivityPage = () => {
   };
 
   const handleMapModalClose = () => {
-    // Reset the activity tracker when the map modal is closed
     handleResetJourney();
   };
 
   return (
     <Container className="py-5">
+      {currentUser?.uid && (
+        <div className="mb-4">
+          <div>
+            <strong>User ID:</strong>
+          </div>
+          <div>{currentUser.uid}</div>
+        </div>
+      )}
+
       {/* Completed Journeys Table */}
       <Row className="mb-4">
         <Col>
@@ -101,15 +171,17 @@ const ActivityPage = () => {
                   <th>Transport Mode</th>
                   <th>Distance (km)</th>
                   <th>Duration</th>
+                  <th>Date</th>
                 </tr>
               </thead>
               <tbody>
                 {completedJourneys.map((journey, index) => (
-                  <tr key={index}>
+                  <tr key={journey.id}>
                     <td>{index + 1}</td>
                     <td>{journey.transportMode}</td>
                     <td>{journey.distance}</td>
                     <td>{journey.elapsedTime}</td>
+                    <td>{new Date(journey.timestamp.toDate()).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -119,8 +191,6 @@ const ActivityPage = () => {
           )}
         </Col>
       </Row>
-
-
 
       {/* Activity Tracker */}
       <Row className="justify-content-center mb-4">
@@ -168,7 +238,7 @@ const ActivityPage = () => {
         formatTime={formatTime}
         routeCoordinates={routeCoordinates}
         mapRef={mapRef}
-        handleMapModalClose={handleMapModalClose} // Close button now resets the tracker
+        handleMapModalClose={handleMapModalClose}
       />
     </Container>
   );
