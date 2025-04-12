@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import BarcodeScannerComponent from 'react-qr-barcode-scanner';
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../../features/auth/context/AuthContext';
+import useFetchProduct from './hooks/useFetchProduct';
 
 const QRScannerPage = () => {
     const [barcode, setBarcode] = useState(null);
+    const { product, loading, error } = useFetchProduct(barcode);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isCreatePopupOpen, setIsCreatePopupOpen] = useState(false);
     const [customCollections, setCustomCollections] = useState([]);
@@ -13,6 +15,20 @@ const QRScannerPage = () => {
     const db = getFirestore();
     const auth = useAuth();
     const user = auth.currentUser;
+
+    // Extract eco-related information if the product is available
+    const ecoInfo = product
+        ? {
+              ecoScore: product.ecoscore_grade || 'Unknown',
+              ecoScoreScore: product.ecoscore_score || 'N/A',
+              novaGroup: product.nova_group || 'N/A',
+              packaging: product.packaging || 'N/A',
+              carbonFootprint: product.carbon_footprint_per_100g || 'N/A',
+              environmentImpactLevels: product.environment_impact_level_tags || [],
+              palmOilIngredients: product.ingredients_from_palm_oil_n || 0,
+              organicIngredients: product.ingredients_from_or_that_may_be_from_organic_agriculture_n || 0,
+          }
+        : null;
 
     useEffect(() => {
         const fetchUserDocument = async () => {
@@ -61,8 +77,6 @@ const QRScannerPage = () => {
 
     return (
         <div>
-            <h1>QR Scanner</h1>
-
             {/* Square container with a plus sign */}
             <div
                 style={{
@@ -134,40 +148,62 @@ const QRScannerPage = () => {
                 </div>
             )}
 
-            {/* Table for displaying custom collections */}
-            <h2>Custom Collections</h2>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-                <thead>
-                    <tr>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Name</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {customCollections.map((collection, index) => (
-                        <tr key={index}>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{collection.name}</td>
-                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{collection.type}</td>
+            <div style={{ marginTop: '20px' }}>
+                {loading && <p>Loading product data...</p>}
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {product && (
+                    <div>
+                        <h2>Product Details</h2>
+                        <p><strong>Name:</strong> {product.product_name || 'N/A'}</p>
+                        <p><strong>Brand:</strong> {product.brands || 'N/A'}</p>
+                        <p><strong>Categories:</strong> {product.categories || 'N/A'}</p>
+                        <p><strong>Ingredients:</strong> {product.ingredients_text || 'N/A'}</p>
+                        
+                        {/* Display eco-related information */}
+                        <h2>Environmental Information</h2>
+                        <p><strong>Eco-Score:</strong> {product.ecoscore_grade?.toUpperCase() || 'Unknown'}</p>
+                        <p><strong>Nutri-Score:</strong> {product.nutriscore_grade?.toUpperCase() || 'Unknown'}</p>
+                        <p><strong>Eco-Score (Score):</strong> {ecoInfo.ecoScoreScore}</p>
+                        <p><strong>Nova Group:</strong> {ecoInfo.novaGroup}</p>
+                        <p><strong>Packaging:</strong> {ecoInfo.packaging}</p>
+                    </div>
+                )}
+                
+                {/* Table for displaying custom collections */}
+                <h2>Custom Collections</h2>
+                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+                    <thead>
+                        <tr>
+                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Name</th>
+                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Type</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {/* Button to open create collection popup */}
-            <button
-                style={{
-                    marginTop: '20px',
-                    padding: '10px 20px',
-                    backgroundColor: '#4CAF50',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                }}
-                onClick={() => setIsCreatePopupOpen(true)}
-            >
-                Create New Collection
-            </button>
+                    </thead>
+                    <tbody>
+                        {customCollections.map((collection, index) => (
+                            <tr key={index}>
+                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{collection.name}</td>
+                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{collection.type}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                
+                {/* Button to open create collection popup */}
+                <button
+                    style={{
+                        marginTop: '20px',
+                        padding: '10px 20px',
+                        backgroundColor: '#4CAF50',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}
+                    onClick={() => setIsCreatePopupOpen(true)}
+                >
+                    Create New Collection
+                </button>
+            </div>
 
             {/* Popup for creating a new collection */}
             {isCreatePopupOpen && (
