@@ -18,8 +18,7 @@ const TransportModal = ({
         <Form>
           <Form.Group>
             <Form.Label>How are you traveling?</Form.Label>
-            <Form.Control
-              as="select"
+            <Form.Select
               value={transportMode}
               onChange={handleTransportSelect}
             >
@@ -29,16 +28,16 @@ const TransportModal = ({
                   {option.label}
                 </option>
               ))}
-            </Form.Control>
+            </Form.Select>
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleTransportModalClose}>
+        <Button variant="outline-secondary" onClick={handleTransportModalClose}>
           Cancel
         </Button>
         <Button
-          variant="primary"
+          variant="success"
           onClick={handleTransportModalSubmit}
           disabled={!transportMode}
         >

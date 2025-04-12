@@ -140,17 +140,6 @@ const CollectionsTable = ({
                           <td colSpan="3" className="ps-4">
                             <div className="d-flex align-items-center justify-content-between">
                               <div className="d-flex align-items-center">
-                                {/* Display product image */}
-                                {product.image_url && (
-                                  <img 
-                                    src={product.image_url} 
-                                    alt={product.name || product.product_name}
-                                    width="40" 
-                                    height="40" 
-                                    className="me-3"
-                                    style={{objectFit: 'contain'}}
-                                  />
-                                )}
                                 <span className="fw-medium">{product.name || product.product_name || 'Unknown Product'}</span>
                               </div>
                               

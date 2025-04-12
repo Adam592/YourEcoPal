@@ -22,7 +22,7 @@ const MapModal = ({
         ></div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleMapModalClose}>
+        <Button variant="success" onClick={handleMapModalClose}>
           Close
         </Button>
       </Modal.Footer>
