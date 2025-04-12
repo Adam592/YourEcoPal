@@ -1,5 +1,3 @@
-
-// src/components/ControlButtons.jsx
 import React from 'react';
 
 const ControlButtons = ({ isRunning, toggleTimer, resetTimer }) => {

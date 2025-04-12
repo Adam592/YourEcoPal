@@ -3,12 +3,11 @@ import TimerDisplay from './components/TimerDisplay';
 import TimerControls from './components/TimerControls';
 import ControlButtons from './components/ControlButtons';
 import QuickPresets from './components/QuickPresets';
-import DidYouKnow from './components/DidYouKnow';
 import TimerAlert from './components/TimerAlert';
 import useTimer from './hooks/useTimer';
 
 const WaterPage = () => {
-        const {
+  const {
     hours,
     minutes,
     seconds,
@@ -27,7 +26,7 @@ const WaterPage = () => {
   } = useTimer();
 
   const [showAlert, setShowAlert] = useState(false);
-  const vibrationRef = useRef(null);
+    const vibrationRef = useRef(null);
   
   useEffect(() => {
     if ('vibrate' in navigator) {
@@ -37,7 +36,7 @@ const WaterPage = () => {
     }
   }, []);
 
-// Handle timer end
+  // Handle timer end
   useEffect(() => {
     if (totalTimeInSeconds === 0 && !isRunning && timerHasRun) {
       handleTimerEnd();
@@ -50,31 +49,28 @@ const WaterPage = () => {
 
     if ('vibrate' in navigator) {
       vibrationRef.current = setInterval(() => {
-      navigator.vibrate([0, 500, 200, 500]);
-    }, 1500);
+        navigator.vibrate([0, 500, 200, 500]);
+      }, 1500);
       console.log('Vibrating...');
     } else {
       console.log('Vibration API is not supported');
     }
   };
   
-
   // Stop vibration and close alert
   const handleCloseAlert = () => {
     if (vibrationRef.current) {
-        clearInterval(vibrationRef.current);
-        navigator.vibrate(0);
-      }
+      clearInterval(vibrationRef.current);
+      navigator.vibrate(0);
+    }
     setShowAlert(false);
     resetTimer(); // Reset the timer when closing the alert
   };
 
-
-     return (
-      <div className="flex flex-col items-center min-h-screen bg-green-100 p-4 font-sans">
-      
-      <h2 className="text-xl text-gray-700 font-medium mb-2">Set Your Water Timer</h2>
-      <div className="text-green-600 text-lg mb-4">▼</div>
+  return (
+    <div className="d-flex flex-column align-items-center py-4" style={{ backgroundColor: '#e8f5e9', minHeight: '100vh' }}>
+      <h2 className="text-secondary fw-medium mb-2">Set Your Water Timer</h2>
+      <div className="text-success fs-5 mb-4">▼</div>
       
       <TimerDisplay hours={hours} minutes={minutes} seconds={seconds} />
       
@@ -101,14 +97,12 @@ const WaterPage = () => {
         applyPreset={applyPreset}
         isRunning={isRunning}
       />
-      
-      <DidYouKnow/>
-            
+                  
       {showAlert && (
         <TimerAlert handleCloseAlert={handleCloseAlert} />
       )}
-
     </div>
   );
 };
+
 export default WaterPage;
